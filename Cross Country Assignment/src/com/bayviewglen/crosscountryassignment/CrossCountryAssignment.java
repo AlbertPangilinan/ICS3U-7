@@ -1,3 +1,4 @@
+// Marker says: You are missing a comment here explaining the program with your name and course, etc.
 package com.bayviewglen.crosscountryassignment;
 
 import java.text.DecimalFormat;
@@ -27,7 +28,7 @@ public class CrossCountryAssignment {
 		// End Name //
 
 		// Start Times //
-
+		// Marker says: you are supposed to prompt the user by their first name.
 		System.out.print("Please enter Runner 1's time from the start of the race to the first mile: ");
 		String runner1Split1 = keyboard.nextLine();
 
