@@ -64,7 +64,9 @@ public class CrossCountryAssignment {
 		String runner1StartToMile2Min = runner1StartToMile2.substring(0, runner1StartToMile2colon);
 		double runner1StartToMile2MinDouble = Double.parseDouble(runner1StartToMile2Min);
 		double runner1StartToMile2MinInSec = runner1StartToMile2MinDouble * MIN_TO_SEC;
-
+		
+		// Marker says: Why are you doing this? You do not need to since the seconds portion is there and includes ms
+		// This will work but should not be done.
 		int runner1StartToMile2decimal = runner1StartToMile2.indexOf('.');
 		String runner1StartToMile2Sec = runner1StartToMile2.substring(runner1StartToMile2colon + 1, runner1StartToMile2decimal);
 		double runner1StartToMile2SecDouble = Double.parseDouble(runner1StartToMile2Sec);
