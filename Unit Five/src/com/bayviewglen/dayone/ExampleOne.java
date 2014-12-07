@@ -14,7 +14,7 @@ public class ExampleOne {
 	}
 
 	// Precondition: a + b must be less than the length of the string
-	// Postcondition: results the character at the index a + b;
+	// Postcondition: results the character at the index a + b
 	private static char calc(int a, int b, String message) {
 
 		int sum = a + b;
