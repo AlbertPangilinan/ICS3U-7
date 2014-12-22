@@ -1,7 +1,12 @@
-/*
- * Albert Pangilinan - ICS3U-AP
- * Blackjack Assignment
- */
+/*******************************************************************************
+ * Author: Albert Pangilinan												   *
+ * Course: ICS3U-AP															   *
+ * 																			   *
+ * Blackjack Assignment														   *
+ * 																			   *
+ * This program simulates a one-player game of Blackjack,					   *
+ * where the player plays against a computer generated player – the dealer.    *																		   *
+ *******************************************************************************/
 package com.bayviewglen.blackjack;
 
 import java.util.Locale;
@@ -10,12 +15,13 @@ import java.text.NumberFormat;
 
 public class Blackjack {
 
+	// Main Method
 	public static void main(String[] args) {
 		boolean quit = false;
-		boolean gameOver = false;
-		int wallet = 500;
 
 		while (!quit) {
+			boolean gameOver = false;
+			int wallet = 500;
 			String name = getUserName();
 			Locale location = getLocale();
 
@@ -27,14 +33,87 @@ public class Blackjack {
 				String dealerCard2 = drawCard();
 				String playerCards = playerCard1 + " " + playerCard2;
 				String dealerCards = dealerCard1 + " XX";
-				int playerTotal = getPlayerTotal(playerCard1, playerCard2);
+				int playerTotal = getTotal(playerCard1, playerCard2);
+				int dealerTotal = getTotal(dealerCard1, dealerCard2);
 
-				int playerAction = getFirstAction(playerCards, dealerCards, name, bet, wallet);
+				if (playerTotal == 21) {
+					dealerCards = dealerCard1 + " " + dealerCard2;
+					wallet = betResult(dealerCards, playerCards, dealerTotal, playerTotal, name, wallet, bet, location);
+					String winner = whoWins(dealerTotal, playerTotal);
+					gameOver = playAgain(wallet, bet, winner);
+					playerTotal = 0;
+				} else if (playerTotal != 21) {
 
-				// Start - Hit
+					int playerAction = getFirstAction(playerCards, dealerCards, name, bet, wallet);
 
-				while (playerAction == 1) {
-					if (playerTotal < 21) {
+					// Start - Hit
+					while (playerAction == 1) {
+						if (playerTotal < 21) {
+							String playerCard = drawCard();
+							int playerCardValue = getValue(playerCard);
+							playerTotal += playerCardValue;
+							if (playerCardValue == 11 && playerTotal > 21) {
+								playerCardValue = 1;
+								playerTotal -= 10;
+							}
+							playerCards += " " + playerCard;
+						}
+						if (playerTotal < 21) {
+							playerAction = getNextAction(playerCards, dealerCards, name, bet, wallet);
+						} else if (playerTotal > 21) {
+							dealerCards = dealerCard1 + " " + dealerCard2;
+							wallet = betResult(dealerCards, playerCards, dealerTotal, playerTotal, name, wallet, bet, location);
+							String winner = whoWins(dealerTotal, playerTotal);
+							gameOver = playAgain(wallet, bet, winner);
+							playerTotal = 0;
+							playerAction = 0;
+						} else if (playerTotal == 21) {
+							dealerCards = dealerCard1 + " " + dealerCard2;
+							wallet = betResult(dealerCards, playerCards, dealerTotal, playerTotal, name, wallet, bet, location);
+							String winner = whoWins(dealerTotal, playerTotal);
+							gameOver = playAgain(wallet, bet, winner);
+							playerTotal = 0;
+							playerAction = 0;
+						}
+					}
+					// End - Hit
+					
+					// Start - Stay
+					if (playerAction == 2) {
+						dealerCards = dealerCard1 + " " + dealerCard2;
+						boolean dealerDone = false;
+						while (!dealerDone) {
+							if (playerTotal >= 21) {
+								dealerDone = true;
+							} else if (playerTotal < 21) {
+								if (dealerTotal >= 17) {
+									dealerDone = true;
+								}
+								while (dealerTotal < 17) {
+									String dealerCard = drawCard();
+									int dealerCardValue = getValue(dealerCard);
+									dealerTotal += dealerCardValue;
+									if (dealerCardValue == 11 && dealerTotal > 21) {
+										dealerCardValue = 1;
+										dealerTotal -= 10;
+									}
+									dealerCards += " " + dealerCard;
+									if (dealerTotal >= 17) {
+										dealerDone = true;
+									}
+								}
+							}
+						}
+						wallet = betResult(dealerCards, playerCards, dealerTotal, playerTotal, name, wallet, bet, location);
+						String winner = whoWins(dealerTotal, playerTotal);
+						gameOver = playAgain(wallet, bet, winner);
+						playerTotal = 0;
+						playerAction = 0;
+					// End - Stay
+
+					// Start - Double Down
+					} else if (playerAction == 3) {
+						bet *= 2;
 						String playerCard = drawCard();
 						int playerCardValue = getValue(playerCard);
 						playerTotal += playerCardValue;
@@ -43,67 +122,49 @@ public class Blackjack {
 							playerTotal -= 10;
 						}
 						playerCards += " " + playerCard;
-						playerAction = getNextAction(playerCards, dealerCards, name, bet, wallet);
-					} else if (playerTotal > 21) {
-						int dealerTotal = getDealerTotal(dealerCard1, dealerCard2, dealerCards);
-						wallet = betResult(dealerCards, playerCards, dealerTotal, playerTotal, name, wallet, bet, location);
-						String winner = whoWins(dealerTotal, playerTotal);
-						gameOver = playAgain(wallet, bet, winner);
-						playerTotal = 0;
-						playerAction = 0;
-					} else if (playerTotal == 21) {
-						int dealerTotal = getDealerTotal(dealerCard1, dealerCard2, dealerCards);
+						dealerCards = dealerCard1 + " " + dealerCard2;
+						boolean dealerDone = false;
+						while (!dealerDone) {
+							if (playerTotal >= 21) {
+								dealerDone = true;
+							} else if (playerTotal < 21) {
+								if (dealerTotal >= 17) {
+									dealerDone = true;
+								}
+								while (dealerTotal < 17) {
+									String dealerCard = drawCard();
+									int dealerCardValue = getValue(dealerCard);
+									dealerTotal += dealerCardValue;
+									if (dealerCardValue == 11 && dealerTotal > 21) {
+										dealerCardValue = 1;
+										dealerTotal -= 10;
+									}
+									dealerCards += " " + dealerCard;
+									if (dealerTotal >= 17) {
+										dealerDone = true;
+									}
+								}
+							}
+						}
 						wallet = betResult(dealerCards, playerCards, dealerTotal, playerTotal, name, wallet, bet, location);
 						String winner = whoWins(dealerTotal, playerTotal);
 						gameOver = playAgain(wallet, bet, winner);
 						playerTotal = 0;
 						playerAction = 0;
 					}
+					// End - Double Down
 				}
-
-				// End - Hit
-				// Start - Stay
-
-				if (playerAction == 2) {
-					int dealerTotal = getDealerTotal(dealerCard1, dealerCard2, dealerCards);
-					wallet = betResult(dealerCards, playerCards, dealerTotal, playerTotal, name, wallet, bet, location);
-					String winner = whoWins(dealerTotal, playerTotal);
-					gameOver = playAgain(wallet, bet, winner);
-				}
-
-				// End - Stay
-				// Start - Double Down
-
-				else if (playerAction == 3) {
-					bet *= 2;
-
-					String playerCard = drawCard();
-					int playerCardValue = getValue(playerCard);
-					playerTotal += playerCardValue;
-					if (playerCardValue == 11 && playerTotal > 21) {
-						playerCardValue = 1;
-						playerTotal -= 10;
-					}
-					playerCards += " " + playerCard;
-
-					int dealerTotal = getDealerTotal(dealerCard1, dealerCard2, dealerCards);
-					wallet = betResult(dealerCards, playerCards, dealerTotal, playerTotal, name, wallet, bet, location);
-					String winner = whoWins(dealerTotal, playerTotal);
-					gameOver = playAgain(wallet, bet, winner);
-				}
-
-				// End - Double Down
-
 			}
 		}
 	}
 
-	// Precondition:
-	// Postcondition:
+	// Precondition: Prompts the player for their name.
+	// Postcondition: Returns the name entered, or exits if the player enters
+	// "quit"
 	private static String getUserName() {
 		Scanner keyboard = new Scanner(System.in);
 
-		System.out.print("Please enter your name: ");
+		System.out.print("\nPlease enter your name: ");
 		String name = keyboard.nextLine();
 
 		if (name.equalsIgnoreCase("quit")) {
@@ -114,16 +175,15 @@ public class Blackjack {
 		return null;
 	}
 
-	// Precondition:
-	// Postcondition:
+	// Precondition: Prompts the player for their choice of locale
+	// Postcondition: Returns the player's choice of locale
 	private static Locale getLocale() {
 		Scanner keyboard = new Scanner(System.in);
 		boolean validInput = false;
 		boolean inRange = false;
 		int localeInt = 0;
 
-		// Start - Locale Ask & Validation
-
+		// Start - Locale Validation
 		while ((!validInput) || (!inRange)) {
 			System.out.println("\n1. Canada (English)");
 			System.out.println("2. Canada (French)");
@@ -144,23 +204,22 @@ public class Blackjack {
 				localeInt = Integer.parseInt(localeSelect);
 				validInput = true;
 			} catch (NumberFormatException ex) {
-				System.out.println("\nInvalid Input");
+				System.out.println("\nInvalid input. Please try again...");
 			}
 			if (validInput) {
 				if (localeInt >= 1 && localeInt <= 12) {
 					inRange = true;
 				} else {
 					inRange = false;
-					System.out.println("\nInvalid Input");
+					System.out.println("\nInvalid input. Please try again...");
 				}
 			}
 		}
 
 		Locale loc = Locale.CANADA;
+		// End - Locale Validation
 
-		// End - Locale Ask & Validation
 		// Start - Locale Conversion
-
 		if (localeInt == 1) {
 			loc = Locale.CANADA;
 			String localeName = loc.getISO3Country();
@@ -224,12 +283,13 @@ public class Blackjack {
 			return loc;
 		}
 		return loc;
-
 		// End - Locale Conversion
 	}
 
-	// Precondition:
-	// Postcondition:
+	// Precondition: Takes in amount of money the player has and their locale
+	// choice,
+	// and prompts the player for the amount of money they wan to bet.
+	// Postcondition: Returns the amount of money the player wants to bet.
 	private static int getBet(int wallet, Locale location) {
 		Scanner keyboard = new Scanner(System.in);
 		boolean validInput = false;
@@ -237,14 +297,13 @@ public class Blackjack {
 
 		int betInt = 0;
 
-		// Start - Bet Ask & Validation
-
+		// Start - Bet Validation
 		while ((!validInput) || (!inRange)) {
 
 			NumberFormat moneyFormatter = NumberFormat.getCurrencyInstance(location);
 			String newWallet = moneyFormatter.format(wallet);
 
-			System.out.println("You have " + newWallet + ".");
+			System.out.println("\nYou have " + newWallet + ".");
 			System.out.print("How much would you like to bet? ");
 			String betSelect = keyboard.nextLine();
 
@@ -252,28 +311,26 @@ public class Blackjack {
 				betInt = Integer.parseInt(betSelect);
 				validInput = true;
 			} catch (NumberFormatException ex) {
-				System.out.println("\nInvalid Input");
+				System.out.println("\nInvalid input. Please try again...");
 			}
 
 			if (validInput) {
-				if (betInt > wallet) {
-					inRange = false;
-					System.out.println("\nNot enough money");
+				if (betInt <= 0) {
+					System.out.println("\nInvalid input. Please try again...");
+				} else if (betInt > wallet) {
+					System.out.println("\nYou do not have enough money");
 				} else {
 					return betInt;
 				}
 			}
-
-			// End - Bet Ask & Validation
-
+			// End - Bet Validation
 		}
-
 		return betInt;
-
 	}
 
-	// Precondition:
-	// Postcondition:
+	// Precondition: The player must have already entered a valid bet.
+	// Postcondition: Returns a String with a random card value and a random
+	// suit value.
 	private static String drawCard() {
 		final int NUMBER_OF_CARDS = 13;
 		final int NUMBER_OF_SUITS = 4;
@@ -283,7 +340,6 @@ public class Blackjack {
 		String suitValue = null;
 
 		// Start - Draw Card
-
 		int chooseCardValue = ((int) (Math.random() * NUMBER_OF_CARDS) + STARTING_NUMBER);
 		int chooseSuitValue = ((int) (Math.random() * NUMBER_OF_SUITS) + STARTING_NUMBER);
 
@@ -307,63 +363,59 @@ public class Blackjack {
 		} else if (chooseSuitValue == 4) {
 			suitValue = "H";
 		}
-
 		// End - Draw Card
 
 		String card = cardValue + suitValue;
 		return card;
 	}
 
-	private static int getPlayerTotal(String playerCard1, String playerCard2) {
-		int playerCard1Int = 0, playerCard2Int = 0, playerTotal = 0;
+	// Precondition: Takes in two cards from either the player or the dealer.
+	// Postcondition: Returns the total of the two cards.
+	private static int getTotal(String card1, String card2) {
+		int card1Int = 0, card2Int = 0, total = 0;
 
 		// Start - Card 1 Calculations
-
-		if (playerCard1.length() == 2) {
-			char playerCard1Char = playerCard1.charAt(0);
-			if (playerCard1Char == 'J' || playerCard1Char == 'Q' || playerCard1Char == 'K') {
-				playerCard1Int = 10;
-			} else if (playerCard1Char == 'A') {
-				playerCard1Int = 11;
+		if (card1.length() == 2) {
+			char card1Char = card1.charAt(0);
+			if (card1Char == 'J' || card1Char == 'Q' || card1Char == 'K') {
+				card1Int = 10;
+			} else if (card1Char == 'A') {
+				card1Int = 11;
 			} else {
-				playerCard1Int = Character.getNumericValue(playerCard1Char);
+				card1Int = Character.getNumericValue(card1Char);
 			}
-
-		} else if (playerCard1.length() == 3) {
-			playerCard1Int = 10;
+		} else if (card1.length() == 3) {
+			card1Int = 10;
 		}
-
 		// End - Card 1 Calculations
+
 		// Start - Card 2 Calculations
-
-		if (playerCard2.length() == 2) {
-			char playerCard2Char = playerCard2.charAt(0);
-			if (playerCard2Char == 'J' || playerCard2Char == 'Q' || playerCard2Char == 'K') {
-				playerCard2Int = 10;
-			} else if (playerCard2Char == 'A') {
-				playerCard2Int = 11;
+		if (card2.length() == 2) {
+			char card2Char = card2.charAt(0);
+			if (card2Char == 'J' || card2Char == 'Q' || card2Char == 'K') {
+				card2Int = 10;
+			} else if (card2Char == 'A') {
+				card2Int = 11;
 			} else {
-				playerCard2Int = Character.getNumericValue(playerCard2Char);
+				card2Int = Character.getNumericValue(card2Char);
 			}
-
-		} else if (playerCard2.length() == 3) {
-			playerCard2Int = 10;
+		} else if (card2.length() == 3) {
+			card2Int = 10;
 		}
-
 		// End - Card 2 Calculations
+
 		// Start - Ace Check
-
-		if (playerCard1Int == 11 && playerCard2Int == 11) {
-			playerCard2Int = 1;
+		if (card1Int == 11 && card2Int == 11) {
+			card2Int = 1;
 		}
-
 		// End - Ace Check
 
-		playerTotal = playerCard1Int + playerCard2Int;
-		return playerTotal;
-
+		total = card1Int + card2Int;
+		return total;
 	}
 
+	// Precondition: The player and dealer must have already drawn their cards.
+	// Postcondition: Returns the first action of the player.
 	private static int getFirstAction(String playerCards, String dealerCards, String name, int bet, int wallet) {
 		Scanner keyboard = new Scanner(System.in);
 		boolean validInput = false;
@@ -372,16 +424,14 @@ public class Blackjack {
 		int playerActionInt = 0;
 
 		// Start - Display Cards
-
 		System.out.println();
 		System.out.println("Dealer: " + dealerCards);
 		System.out.println("Player: " + playerCards);
-
 		// End - Display Cards
-		// Start - Double Down Check
 
+		
 		while (!validInput || !inRange) {
-
+			// Start - No Double Down
 			if (bet > (wallet / 2)) {
 				System.out.println("\nWhat will " + name + " do?");
 				System.out.println("1. Hit   2. Stay");
@@ -392,19 +442,20 @@ public class Blackjack {
 					playerActionInt = Integer.parseInt(playerAction);
 					validInput = true;
 				} catch (NumberFormatException ex) {
-					System.out.println("\nInvalid Input");
+					System.out.println("\nInvalid input. Please try again...");
 				}
 				if (validInput) {
 					if (playerActionInt == 1 || playerActionInt == 2) {
 						inRange = true;
 					} else {
 						inRange = false;
-						System.out.println("\nInvalid Input");
+						System.out.println("\nInvalid input. Please try again...");
 					}
 				}
-
 				// End - Action Validation
+			// End - No Double Down
 
+			// Start - Double Down Check
 			} else if (bet <= (wallet / 2)) {
 				System.out.println("\nWhat will " + name + " do?");
 				System.out.println("1. Hit   2. Stay   3. Double Down");
@@ -415,17 +466,16 @@ public class Blackjack {
 					playerActionInt = Integer.parseInt(playerAction);
 					validInput = true;
 				} catch (NumberFormatException ex) {
-					System.out.println("\nInvalid Input");
+					System.out.println("\nInvalid input. Please try again...");
 				}
 				if (validInput) {
 					if (playerActionInt >= 1 && playerActionInt <= 3) {
 						inRange = true;
 					} else {
 						inRange = false;
-						System.out.println("\nInvalid Input");
+						System.out.println("\nInvalid input. Please try again...");
 					}
 				}
-
 				// End - Action Validation
 			}
 		}
@@ -434,30 +484,31 @@ public class Blackjack {
 		return playerActionInt;
 	}
 
-	private static int getValue(String playerCard) {
-		int playerCardInt = 0;
+	// Precondition: Takes in a card, from either the player or the dealer.
+	// Postcondition: Returns the value of the card.
+	private static int getValue(String card) {
+		int cardInt = 0;
 
 		// Start - Card Calculations
-
-		if (playerCard.length() == 2) {
-			char playerCardChar = playerCard.charAt(0);
-			if (playerCardChar == 'J' || playerCardChar == 'Q' || playerCardChar == 'K') {
-				playerCardInt = 10;
-			} else if (playerCardChar == 'A') {
-				playerCardInt = 11;
+		if (card.length() == 2) {
+			char cardChar = card.charAt(0);
+			if (cardChar == 'J' || cardChar == 'Q' || cardChar == 'K') {
+				cardInt = 10;
+			} else if (cardChar == 'A') {
+				cardInt = 11;
 			} else {
-				playerCardInt = Character.getNumericValue(playerCardChar);
+				cardInt = Character.getNumericValue(cardChar);
 			}
-
-		} else if (playerCard.length() == 3) {
-			playerCardInt = 10;
+		} else if (card.length() == 3) {
+			cardInt = 10;
 		}
-
 		// End - Card Calculations
 
-		return playerCardInt;
+		return cardInt;
 	}
 
+	// Precondition: The player must have already chosen their first action.
+	// Postcondition: Returns the next action of the player.
 	private static int getNextAction(String playerCards, String dealerCards, String name, int bet, int wallet) {
 		Scanner keyboard = new Scanner(System.in);
 		boolean validInput = false;
@@ -466,13 +517,10 @@ public class Blackjack {
 		int playerActionInt = 0;
 
 		// Start - Display Cards
-
 		System.out.println();
 		System.out.println("Dealer: " + dealerCards);
 		System.out.println("Player: " + playerCards);
-
 		// End - Display Cards
-		// Start - Double Down Check
 
 		while (!validInput || !inRange) {
 			System.out.println("\nWhat will " + name + " do?");
@@ -484,136 +532,75 @@ public class Blackjack {
 				playerActionInt = Integer.parseInt(playerAction);
 				validInput = true;
 			} catch (NumberFormatException ex) {
-				System.out.println("\nInvalid Input");
+				System.out.println("\nInvalid input. Please try again...");
 			}
 			if (validInput) {
 				if (playerActionInt == 1 || playerActionInt == 2) {
 					inRange = true;
 				} else {
 					inRange = false;
-					System.out.println("\nInvalid Input");
+					System.out.println("\nInvalid input. Please try again...");
 				}
 			}
 			// End - Action Validation
 		}
-		// End - Double Down Check
-
 		return playerActionInt;
 	}
 
-	private static int getDealerTotal(String dealerCard1, String dealerCard2, String dealerCards) {
-		int dealerCard1Int = 0, dealerCard2Int = 0, dealerTotal = 0;
-
-		// Start - Card 1 Calculations
-
-		if (dealerCard1.length() == 2) {
-			char dealerCard1Char = dealerCard1.charAt(0);
-			if (dealerCard1Char == 'J' || dealerCard1Char == 'Q' || dealerCard1Char == 'K') {
-				dealerCard1Int = 10;
-			} else if (dealerCard1Char == 'A') {
-				dealerCard1Int = 11;
-			} else {
-				dealerCard1Int = Character.getNumericValue(dealerCard1Char);
-			}
-
-		} else if (dealerCard1.length() == 3) {
-			dealerCard1Int = 10;
-		}
-
-		// End - Card 1 Calculations
-		// Start - Card 2 Calculations
-
-		if (dealerCard2.length() == 2) {
-			char dealerCard2Char = dealerCard2.charAt(0);
-			if (dealerCard2Char == 'J' || dealerCard2Char == 'Q' || dealerCard2Char == 'K') {
-				dealerCard2Int = 10;
-			} else if (dealerCard2Char == 'A') {
-				dealerCard2Int = 11;
-			} else {
-				dealerCard2Int = Character.getNumericValue(dealerCard2Char);
-			}
-
-		} else if (dealerCard2.length() == 3) {
-			dealerCard2Int = 10;
-		}
-
-		// End - Card 2 Calculations
-		// Start - Ace Check
-
-		if (dealerCard1Int == 11 && dealerCard2Int == 11) {
-			dealerCard2Int = 1;
-		}
-
-		// End - Ace Check
-		// Start Dealer Play
-
-		dealerTotal = dealerCard1Int + dealerCard2Int;
-		while (dealerTotal < 17) {
-			String dealerCard = drawCard();
-			int dealerCardValue = getValue(dealerCard);
-			dealerTotal += dealerCardValue;
-			if (dealerCardValue == 11 && dealerTotal > 21) {
-				dealerCardValue = 1;
-				dealerTotal -= 10;
-			}
-			dealerCards += " " + dealerCard;
-			if (dealerTotal >= 17) {
-				return dealerTotal;
-			}
-		}
-		return dealerTotal;
-	}
-
-	private static int betResult (String dealerCards, String playerCards, int dealerTotal, int playerTotal, String name, int wallet, int bet, Locale location) {
+	// Precondition: The player must have already chosen to stay or double down,
+	//               or has a total greater than or equal to 21.
+	// Postcondition: Returns the player's new amount of money after the bet is
+	//                added or subtracted.
+	private static int betResult(String dealerCards, String playerCards, int dealerTotal, int playerTotal, String name, int wallet, int bet, Locale location) {
 		NumberFormat moneyFormatter = NumberFormat.getCurrencyInstance(location);
 		int newWallet = 0;
 		String newWalletFormat = null;
-		String winner = null;
 
+		// Start - Display Totals
 		System.out.println();
 		System.out.println("Dealer: " + dealerCards);
 		System.out.println("Player: " + playerCards);
 		System.out.println("\nDealer Total: " + dealerTotal);
 		System.out.println("Player Total: " + playerTotal);
-
+		// End - Display Totals
+		
+		// Start - Wallet Calculations
 		if (dealerTotal == playerTotal) {
 			System.out.println("\nTie!");
 			newWallet = wallet;
-			winner = "tie";
 		} else if (dealerTotal == 21) {
 			System.out.println("\nWinner: Dealer!");
 			newWallet = wallet - bet;
-			winner = "dealer";
 		} else if (playerTotal > 21) {
 			System.out.println("\nWinner: Dealer!");
 			newWallet = wallet - bet;
-			winner = "dealer";
 		} else if (dealerTotal > playerTotal && dealerTotal < 21) {
 			System.out.println("\nWinner: Dealer!");
 			newWallet = wallet - bet;
-			winner = "dealer";
 		} else if (playerTotal == 21) {
 			System.out.println("\nWinner: " + name + "!");
 			newWallet = wallet + bet;
-			winner = "player";
 		} else if (dealerTotal > 21) {
 			System.out.println("\nWinner: " + name + "!");
 			newWallet = wallet + bet;
-			winner = "player";
 		} else if (playerTotal > dealerTotal && playerTotal < 21) {
 			System.out.println("\nWinner: " + name + "!");
 			newWallet = wallet + bet;
-			winner = "player";
 		}
-		
+		// End - Wallet Calculations
+
 		newWalletFormat = moneyFormatter.format(newWallet);
 		System.out.println("Money: " + newWalletFormat);
 		return newWallet;
 	}
-	
-	private static String whoWins (int dealerTotal, int playerTotal) {
+
+	// Precondition: The player must have already chosen to stay or double down,
+	// 				 or has a total greater than or equal to 21.
+	// Postcondition: Returns the winner of the hand.
+	private static String whoWins(int dealerTotal, int playerTotal) {
 		String winner = null;
 
+		// Start - Winner Decision
 		if (dealerTotal == playerTotal) {
 			winner = "tie";
 		} else if (dealerTotal == 21) {
@@ -629,19 +616,30 @@ public class Blackjack {
 		} else if (playerTotal > dealerTotal && playerTotal < 21) {
 			winner = "player";
 		}
+		// End - Winner Decision
+		
 		return winner;
 	}
 
+	// Precondition: The winner of the hand must have already been decided.
+	// Postcondition: Returns a boolean value stating whether the player would
+	//                like to play another game,
+	//                or ends the game when the player has no money left.
 	private static boolean playAgain(int wallet, int bet, String winner) {
 		Scanner keyboard = new Scanner(System.in);
 		boolean validInput = false;
-		
-		while (!validInput){
-			if (winner.equals("dealer") && wallet - bet == 0) {
-				System.out.println("You are out of money!");
-				System.out.println("\n\nGAME OVER\n\n");
+
+		while (!validInput) {
+			
+			// Start - Game Over
+			if (winner.equals("dealer") && wallet == 0) {
+				System.out.println("\nYou are out of money!");
+				System.out.println("\n\nGAME OVER\n");
 				validInput = true;
 				return true;
+			// End - Game Over
+				
+			// Start - Play Again
 			} else {
 				System.out.println("\nPlay again? Y/N");
 				String newGame = keyboard.nextLine();
@@ -652,10 +650,13 @@ public class Blackjack {
 					validInput = true;
 					return true;
 				} else {
-					System.out.println("Invalid Input");
+					System.out.println("Invalid input. Please try again...");
 				}
+			// End - Play Again
+				
 			}
 		}
 		return (Boolean) null;
 	}
 }
+// End of Program
