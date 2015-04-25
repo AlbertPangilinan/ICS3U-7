@@ -10,8 +10,6 @@ public class SortingAlgorithms {
 		selectionSort(numbers);
 		display(numbers);
 		
-		
-		
 		display(numbers2);
 		insertionSort(numbers2);
 		display(numbers2);
