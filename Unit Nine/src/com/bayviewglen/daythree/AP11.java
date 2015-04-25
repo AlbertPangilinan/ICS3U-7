@@ -2,7 +2,7 @@ package com.bayviewglen.daythree;
 
 public class AP11 {
 
-	public int nextTankToFill (int threshold) {
+/*	public int nextTankToFill (int threshold) {
 		int minIndex = 0;
 		for (int i = 0; i < tanks.size(); i++) {
 			if (tanks.get(i).getFuelLevel < tanks.get(minIndex).getFuelLevel) {
@@ -24,6 +24,6 @@ public class AP11 {
 			changeDirection(); 
 		}
 		moveForward(Math.abs(filler.getCurrentIndex - locIndex));
-	}
+	} */
 	
 }

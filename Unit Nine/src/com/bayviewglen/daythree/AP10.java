@@ -2,7 +2,7 @@ package com.bayviewglen.daythree;
 
 public class AP10 {
 
-	public int getTotalBoxes() {
+/* public int getTotalBoxes() {
 
 		int total = 0;
 
@@ -28,6 +28,6 @@ public class AP10 {
 		}
 		
 		return total;
-	}
+	} */
 
 }
