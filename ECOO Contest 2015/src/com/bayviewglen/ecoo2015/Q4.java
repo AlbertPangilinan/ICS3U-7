@@ -11,7 +11,7 @@ public class Q4 {
 		
 		int windowSize = s.nextInt();
 		
-		String temp = s.nextLine();		
+	//	String temp = s.nextLine();		
 		String str = s.nextLine();
 		int count = 0;
 		
@@ -24,8 +24,8 @@ public class Q4 {
 		int numberOfWords = count + 1;
 		String[] words = new String[100];
 		int[] wordsLength = new int[100];
-		int count1 = wordsLength[0];
-		int j = 0;
+	//	int count1 = wordsLength[0];
+	//	int j = 0;
 			
 		System.out.println(windowSize);
 		
@@ -57,7 +57,7 @@ public class Q4 {
 		count2++;
 		}
 		
-		
+		s.close();
 	}
 
 }

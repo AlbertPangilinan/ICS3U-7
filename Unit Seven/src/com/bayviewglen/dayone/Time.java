@@ -22,9 +22,9 @@ public class Time {
 		}
 	}
 	
-	private Time(){
+/*	private Time(){
 		
-	}
+	} */
 	
 	public Time(double timeInSeconds) {
 		this.minutes = (int)timeInSeconds / 60;

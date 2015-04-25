@@ -76,7 +76,7 @@ public class Q2 {
 ////		}
 		
 
-
+s.close();
 
 	
 }

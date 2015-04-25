@@ -14,12 +14,12 @@ public class Runner {
 	public static final int SPLIT_THREE = 3;
 	public static final int FINAL = 4;
 	
-	private Runner(String firstName, String lastName) {
+/*	private Runner(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		
 		this.times = new Time[5];
-	}
+	} */
 	
 	public Runner(){
 		this.times = new Time[5];
