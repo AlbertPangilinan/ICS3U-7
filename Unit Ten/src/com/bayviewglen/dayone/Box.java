@@ -9,6 +9,14 @@ public class Box extends Rectangle implements Shape3D {
 		this.height = height;
 	}
 
+	public double getArea() {
+		return 2 * (getLength() * getHeight()) + 2 * (getWidth() * getHeight()) + 2 * (getLength() * getWidth());
+	}
+
+	public double getVolume() {
+		return super.getArea() * height;
+	}
+
 	public double getHeight() {
 		return height;
 	}
@@ -17,11 +25,8 @@ public class Box extends Rectangle implements Shape3D {
 		this.height = height;
 	}
 
-	public double getArea() {
-		return (2 * getLength()  * getWidth()) + (2 * getLength() * getHeight()) + (2 * getWidth() * getHeight());
+	public boolean isCube() {
+		return ((getLength() == getHeight()) && (isSquare()));
 	}
-	
-	public double getVolume(double height) {
-		return super.getArea(length, width) * height;
-	}
+
 }
